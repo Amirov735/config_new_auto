@@ -7,11 +7,8 @@ print("Запуск имбового автообновления конфиго
 # Список крутых публичных источников (добавляй/убирай свои)
 SOURCES = [
     "https://raw.githubusercontent.com/ksenkovsolo/HardVPN-bypass-WhiteLists-/refs/heads/main/vpn-lte/subscriptions/1.txt",  # твой основной
-    # Добавь похожие публичные подписки (найди в поиске "free vless subscription txt github")
-    "https://raw.githubusercontent.com/MatinGhanbari/v2ray-configs/main/subscriptions/filtered/subs/vless.txt",  # пример vless
-    "https://raw.githubusercontent.com/MatinGhanbari/v2ray-configs/main/subscriptions/filtered/subs/vmess.txt",   # пример vmess
-    "https://raw.githubusercontent.com/Surfboardv2ray/TGParse/main/splitted/hysteria2",  # пример hysteria2 (если есть)
-    # Ещё варианты: ищи "hysteria2 subscription txt github" — много репозиториев
+    "https://raw.githubusercontent.com/prominbro/sub/refs/heads/main/212.txt",
+    "https://gist.githubusercontent.com/sevushyamamoto-stack/9341be7a058e132154d407d082a60fb1/raw/mysub.txt",
 ]
 
 all_lines = []
