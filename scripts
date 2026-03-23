@@ -1,0 +1,27 @@
+# scripts/update_configs.py
+# Здесь будет твоя логика сбора конфигов
+
+import os
+import datetime
+
+print("Starting config update...")
+
+# Твоя будущая логика:
+# - requests.get(...) или парсинг TG/сайтов
+# - сбор строк конфигов
+configs = [
+    "# Твой пример конфига 1",
+    "vless://...@example.com:443?...",
+    "# Твой пример конфига 2"
+]
+
+output = "\n".join(configs)
+
+# Пишем в файлы
+with open("configs.txt", "w", encoding="utf-8") as f:
+    f.write(output + f"\n\n# Updated: {datetime.datetime.now()}")
+
+with open("version.txt", "w", encoding="utf-8") as f:
+    f.write(f"Last update: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M')}")
+
+print("Configs updated!")
