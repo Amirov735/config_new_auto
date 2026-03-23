@@ -47,7 +47,9 @@ header = f"""# Имбовая коллекция VLESS / VMESS / HYSTERIA2
 
 """
 
-content = header + "\n".join(all_lines)
+content = "\n".join(all_lines)
+
+content += f"\n\n|
 
 # Пишем в configs.txt
 with open("configs.txt", "w", encoding="utf-8") as f:
