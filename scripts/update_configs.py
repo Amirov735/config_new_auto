@@ -47,9 +47,14 @@ header = f"""# Имбовая коллекция VLESS / VMESS / HYSTERIA2
 
 """
 
-content = "\n".join(all_lines)
-
-content += f"\n\n|
+49
+    50|content = "\n".join(all_lines)
+    51|
+    52|# Добавляем только одну строку в самый конец (для v2rayNG это безопасно)
+    53|content += f"\n\n# Auto updated: {datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')} | {len(all_lines)} configs"
+    54|
+    55|# Пишем в configs.txt
+    56|with open("configs.txt", "w", encoding="utf-8") as f:
 
 # Пишем в configs.txt
 with open("configs.txt", "w", encoding="utf-8") as f:
