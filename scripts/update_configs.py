@@ -9,6 +9,7 @@ SOURCES = [
     "https://raw.githubusercontent.com/ksenkovsolo/HardVPN-bypass-WhiteLists-/refs/heads/main/vpn-lte/subscriptions/1.txt",  # твой основной
     "https://raw.githubusercontent.com/prominbro/sub/refs/heads/main/212.txt",
     "https://gist.githubusercontent.com/sevushyamamoto-stack/9341be7a058e132154d407d082a60fb1/raw/mysub.txt",
+    "https://raw.githubusercontent.com/zieng2/wl/refs/heads/main/vless_universal.txt",
 ]
 
 all_lines = []
