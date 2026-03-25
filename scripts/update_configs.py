@@ -6,9 +6,10 @@ print("Запуск имбового автообновления конфиго
 
 # Список крутых публичных источников (добавляй/убирай свои)
 SOURCES = [
-    "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/main/subscriptions/reality.txt",
-    "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/main/subscriptions/vless.txt",
-    "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/main/subscriptions/mixed.txt",
+    "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/WHITE-CIDR-RU-checked.txt",
+    "https://raw.githubusercontent.com/zieng2/wl/refs/heads/main/vless_universal.txt",
+    "https://gitverse.ru/api/repos/bywarm/rser/raw/branch/master/wl.txt",
+    "https://github.com/AvenCores/goida-vpn-configs/raw/refs/heads/main/githubmirror/26.txt",
 ]
 
 all_lines = []
