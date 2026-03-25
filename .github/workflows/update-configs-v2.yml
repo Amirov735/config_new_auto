@@ -25,12 +25,12 @@ jobs:
           pip install requests
 
       - name: Run script
-        run: python scripts/update_configs.py
+        run: python scripts2/update_configs.py # ispravil
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: Автообновление конфигов $(date +"%Y-%m-%d %H:%M")
-          file_pattern: configs_v2.txt version.txt
+          file_pattern: configs_v2.txt version_v2.txt # ispravil
           tagging_message: ''           # ← убирает предупреждение про тег
           skip_dirty_check: true        # ← убирает проверку "dirty" и лишние warnings
