@@ -48,18 +48,14 @@ header = f"""# Имбовая коллекция VLESS / VMESS / HYSTERIA2
 
 """
 
-49
-    50|content = "\n".join(all_lines)
-    51|
-    52|# Добавляем только одну строку в самый конец (для v2rayNG это безопасно)
-    53|content += f"\n\n# Auto updated: {datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')} | {len(all_lines)} configs"
-    54|
-    55|# Пишем в configs.txt
-    56|with open("configs.txt", "w", encoding="utf-8") as f:
+content = "\n".join(all_lines)
+
+# Добавляем только одну строку в самый конец (для v2rayNG это безопасно)
+content += f"\n\n# Auto updated: {datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')} | {len(all_lines)} configs"
 
 # Пишем в configs.txt
 with open("configs.txt", "w", encoding="utf-8") as f:
-    f.write(content)
+    f.write(header + content)   # ← лучше писать header + content
 
 print(f"Финал: {len(all_lines)} уникальных конфигов сохранено!")
 
