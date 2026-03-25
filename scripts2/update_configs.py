@@ -53,13 +53,13 @@ content = "\n".join(all_lines)
 content += f"\n\n# Auto updated: {datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')} | {len(all_lines)} configs"
 
 # Пишем в configs.txt
-with open("configs.txt", "w", encoding="utf-8") as f:
+with open("configs_v2.txt", "w", encoding="utf-8") as f:
     f.write(header + content)   # ← лучше писать header + content
 
 print(f"Финал: {len(all_lines)} уникальных конфигов сохранено!")
 
-# version.txt для красоты
-with open("version.txt", "w", encoding="utf-8") as f:
+# version_v2.txt для красоты
+with open("version_v2.txt", "w", encoding="utf-8") as f:
     f.write(f"Last update: {datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}\n"
             f"Unique configs: {len(all_lines)}\n"
             f"Protocols: vless, vmess, hysteria2")
