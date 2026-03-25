@@ -1,3 +1,3 @@
-Last update: 2026-03-25 19:31 UTC
+Last update: 2026-03-25 19:37 UTC
 Unique configs: 5495
 Protocols: vless, vmess, hysteria2
