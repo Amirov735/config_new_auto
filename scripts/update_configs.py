@@ -3,7 +3,7 @@ import base64
 import re
 from concurrent.futures import ThreadPoolExecutor
 
-# Список URL твоих подписок
+# Список твоих источников
 URLS = [
     "https://raw.githubusercontent.com/ksenkovsolo/HardVPN-bypass-WhiteLists-/refs/heads/main/vpn-lte/subscriptions/1.txt",
 "https://raw.githubusercontent.com/ksenkovsolo/HardVPN-bypass-WhiteLists-/refs/heads/main/vpn-lte/good_keys.txt",
@@ -12,65 +12,61 @@ URLS = [
 "https://raw.githubusercontent.com/ksenkovsolo/HardVPN-bypass-WhiteLists-/refs/heads/main/vpn-lte/subscriptions/1.txt",
 "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/Vless-Reality-White-Lists-Rus-Mobile-2.txt",
 "https://raw.githubusercontent.com/kort0881/vpn-vless-configs-russia/refs/heads/main/githubmirror/new/by_protocol/hysteria2/hysteria2_001.txt",
-    # Добавь сюда остальные свои ссылки
+    # Сюда можно бахнуть еще 10-20 ссылок, он все переварит
 ]
 
-def decode_base64(data):
-    """Декодирует base64, если данные в нем зашифрованы"""
+def try_decode(content):
+    """Безопасное декодирование Base64"""
+    content = content.strip()
+    if not content: return ""
+    if any(prot in content[:100] for prot in ['://']): return content
     try:
-        # Убираем лишние пробелы и переходы строк
-        data = data.strip().replace('\n', '').replace('\r', '')
-        # Добавляем padding, если нужно
-        missing_padding = len(data) % 4
-        if missing_padding:
-            data += '=' * (4 - missing_padding)
-        return base64.b64decode(data).decode('utf-8')
-    except Exception:
-        return data # Если не base64, возвращаем как есть
+        decoded = base64.b64decode(content + "===").decode('utf-8', errors='ignore')
+        return decoded if '://' in decoded else content
+    except:
+        return content
 
 def fetch_url(url):
-    """Функция для скачивания данных по одной ссылке"""
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+    """Загрузка и поиск конфигов через регулярки"""
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) proxy-fetcher'}
     try:
-        print(f"[*] Скачиваю: {url}")
-        response = requests.get(url, headers=headers, timeout=15)
-        response.raise_for_status()
+        r = requests.get(url, headers=headers, timeout=15)
+        r.raise_for_status()
+        data = try_decode(r.text)
         
-        content = response.text
-        # Проверяем, не base64 ли это (обычно подписки v2ray такие)
-        if "://" not in content[:50]: 
-            content = decode_base64(content)
-            
-        return content.splitlines()
+        # Ищем всё, что похоже на vless, vmess, ss, trojan, hy2, hysteria2, tuic
+        pattern = r'(?:vless|vmess|ss|trojan|hysteria2|hy2|tuic)://[^\s|<>"\']+'
+        found = re.findall(pattern, data)
+        return found
     except Exception as e:
-        print(f"[!] Ошибка на {url}: {e}")
+        print(f"[!] Пропуск {url}: {e}")
         return []
 
 def main():
-    print("=== Запуск МОЩНОГО обновления конфигов ===")
+    print("=== START AUTO-UPDATE (6h Cycle) ===")
     
     all_configs = []
 
-    # Запускаем скачивание в 10 потоков одновременно
+    # Качаем всё параллельно (быстро)
     with ThreadPoolExecutor(max_workers=10) as executor:
-        results = executor.map(fetch_url, URLS)
+        results = list(executor.map(fetch_url, URLS))
 
-    for configs in results:
-        all_configs.extend(configs)
+    for res in results:
+        all_configs.extend(res)
 
-    # Чистим: убираем пробелы, пустые строки и дубликаты
-    clean_configs = []
-    for c in all_configs:
-        c = c.strip()
-        if c and ("://" in c) and (c not in clean_configs):
-            clean_configs.append(c)
+    # 1. Чистим дубликаты (сохраняем порядок)
+    unique_configs = list(dict.fromkeys(all_configs))
 
-    # Сохраняем результат
+    # 2. Убираем явный мусор (слишком короткие строки)
+    final_list = [c for c in unique_configs if len(c) > 20]
+
+    # 3. Сохраняем в файл
     with open("configs.txt", "w", encoding="utf-8") as f:
-        f.write("\n".join(clean_configs))
+        f.write("\n".join(final_list))
 
-    print(f"\n[+] Готово! Собрано уникальных конфигов: {len(clean_configs)}")
-    print("[+] Результат сохранен в configs.txt")
+    print(f"\n[+] Сбор завершен!")
+    print(f"[+] Найдено всего: {len(all_configs)}")
+    print(f"[+] Уникальных и живых: {len(final_list)}")
 
 if __name__ == "__main__":
     main()
