@@ -1,79 +1,76 @@
 import requests
-import datetime
-from urllib.parse import urlparse
+import base64
+import re
+from concurrent.futures import ThreadPoolExecutor
 
-print("Запуск имбового автообновления конфигов...")
+# Список URL твоих подписок
+URLS = [
+    "https://raw.githubusercontent.com/ksenkovsolo/HardVPN-bypass-WhiteLists-/refs/heads/main/vpn-lte/subscriptions/1.txt",
+"https://raw.githubusercontent.com/ksenkovsolo/HardVPN-bypass-WhiteLists-/refs/heads/main/vpn-lte/good_keys.txt",
+"https://raw.githubusercontent.com/ksenkovsolo/HardVPN-bypass-WhiteLists-/refs/heads/main/vpn-lte/best_keys.txt",
+"https://raw.githubusercontent.com/ksenkovsolo/HardVPN-bypass-WhiteLists-/refs/heads/main/vpn-lte/subscriptions/2.txt",
+"https://raw.githubusercontent.com/ksenkovsolo/HardVPN-bypass-WhiteLists-/refs/heads/main/vpn-lte/subscriptions/1.txt",
+"https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/Vless-Reality-White-Lists-Rus-Mobile-2.txt",
+"https://raw.githubusercontent.com/kort0881/vpn-vless-configs-russia/refs/heads/main/githubmirror/new/by_protocol/hysteria2/hysteria2_001.txt",
+    # Добавь сюда остальные свои ссылки
+]
 
-# Читаем источники из sources.txt
-with open("sources.txt", "r", encoding="utf-8") as f:
-    SOURCES = [line.strip() for line in f if line.strip() and not line.startswith("#")]
-
-all_lines = []
-seen = set()
-
-for url in SOURCES:
+def decode_base64(data):
+    """Декодирует base64, если данные в нем зашифрованы"""
     try:
-        response = requests.get(url, timeout=15)
+        # Убираем лишние пробелы и переходы строк
+        data = data.strip().replace('\n', '').replace('\r', '')
+        # Добавляем padding, если нужно
+        missing_padding = len(data) % 4
+        if missing_padding:
+            data += '=' * (4 - missing_padding)
+        return base64.b64decode(data).decode('utf-8')
+    except Exception:
+        return data # Если не base64, возвращаем как есть
+
+def fetch_url(url):
+    """Функция для скачивания данных по одной ссылке"""
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+    try:
+        print(f"[*] Скачиваю: {url}")
+        response = requests.get(url, headers=headers, timeout=15)
         response.raise_for_status()
-        lines = response.text.strip().splitlines()
-
-        for line in lines:
-            line = line.strip()
-            if not line or line.startswith('#') or line in seen:
-                continue
-            lower = line.lower()
-            # Оставляем vless, vmess, hysteria2 (можно добавить trojan и т.д. если нужно)
-            if any(proto in lower for proto in ['vless://', 'vmess://', 'hysteria2://']):
-                seen.add(line)
-                all_lines.append(line)
-
-        print(f"Собрано из {urlparse(url).netloc}: {len(lines)} строк, после фильтра ~{len(all_lines)}")
+        
+        content = response.text
+        # Проверяем, не base64 ли это (обычно подписки v2ray такие)
+        if "://" not in content[:50]: 
+            content = decode_base64(content)
+            
+        return content.splitlines()
     except Exception as e:
-        print(f"Пропуск {url}: {e}")
+        print(f"[!] Ошибка на {url}: {e}")
+        return []
 
-# ... (остальной код остаётся без изменений: header, запись в configs.txt и version.txt)
+def main():
+    print("=== Запуск МОЩНОГО обновления конфигов ===")
     
-    # Убираем дубли
-    unique_configs = list(dict.fromkeys(all_configs))
-    
-    # Фильтруем по whitelist (HardVPN стиль)
-    whitelisted = [cfg for cfg in unique_configs if matches_whitelist(cfg, whitelist)]
-    
-    # Пока простой отбор "best/good" (первые N)
-    # Позже добавим реальное тестирование скорости
-    best_keys = whitelisted[:100] if len(whitelisted) > 100 else whitelisted
-    good_keys = whitelisted[100:500] if len(whitelisted) > 100 else []
-    
-    # Сохраняем файлы
-    with open(BEST_KEYS, "w", encoding="utf-8") as f:
-        f.write("\n".join(best_keys))
-    
-    with open(GOOD_KEYS, "w", encoding="utf-8") as f:
-        f.write("\n".join(good_keys))
-    
-    with open(CONFIGS_TXT, "w", encoding="utf-8") as f:
-        f.write("\n".join(unique_configs))
-    
-    # Summary.json как у него
-    summary = {
-        "generated_at": datetime.utcnow().isoformat() + "Z",
-        "sources_processed": len(sources),
-        "raw_configs": raw_count,
-        "unique_configs": len(unique_configs),
-        "whitelisted_configs": len(whitelisted),
-        "best_keys": len(best_keys),
-        "good_keys": len(good_keys),
-        "whitelist_size": len(whitelist),
-        "note": "Фильтр по whitelist для России (мобильные белые списки)"
-    }
-    
-    with open(SUMMARY_FILE, "w", encoding="utf-8") as f:
-        json.dump(summary, f, ensure_ascii=False, indent=2)
-    
-    print(f"Готово!")
-    print(f"   Raw: {raw_count} → Unique: {len(unique_configs)}")
-    print(f"   Whitelisted: {len(whitelisted)}")
-    print(f"   Best keys: {len(best_keys)} | Good keys: {len(good_keys)}")
+    all_configs = []
+
+    # Запускаем скачивание в 10 потоков одновременно
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        results = executor.map(fetch_url, URLS)
+
+    for configs in results:
+        all_configs.extend(configs)
+
+    # Чистим: убираем пробелы, пустые строки и дубликаты
+    clean_configs = []
+    for c in all_configs:
+        c = c.strip()
+        if c and ("://" in c) and (c not in clean_configs):
+            clean_configs.append(c)
+
+    # Сохраняем результат
+    with open("configs.txt", "w", encoding="utf-8") as f:
+        f.write("\n".join(clean_configs))
+
+    print(f"\n[+] Готово! Собрано уникальных конфигов: {len(clean_configs)}")
+    print("[+] Результат сохранен в configs.txt")
 
 if __name__ == "__main__":
     main()
