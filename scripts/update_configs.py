@@ -1,66 +1,37 @@
 import requests
-import json
-from datetime import datetime
-import re
+import datetime
+from urllib.parse import urlparse
 
-# === Настройки ===
-WHITELIST_FILE = "WHITELIST.txt"
-SOURCES_FILE = "sources.txt"          # создай этот файл со списком ссылок на подписки
-BEST_KEYS = "best_keys.txt"
-GOOD_KEYS = "good_keys.txt"
-SUMMARY_FILE = "summary.json"
-CONFIGS_TXT = "configs.txt"           # оставляем для совместимости
+print("Запуск имбового автообновления конфигов...")
 
-def load_whitelist():
+# Читаем источники из sources.txt
+with open("sources.txt", "r", encoding="utf-8") as f:
+    SOURCES = [line.strip() for line in f if line.strip() and not line.startswith("#")]
+
+all_lines = []
+seen = set()
+
+for url in SOURCES:
     try:
-        with open(WHITELIST_FILE, encoding="utf-8") as f:
-            return [line.strip().lower() for line in f if line.strip() and not line.startswith('#')]
-    except FileNotFoundError:
-        print("WHITELIST.txt не найден! Создай его.")
-        return []
+        response = requests.get(url, timeout=15)
+        response.raise_for_status()
+        lines = response.text.strip().splitlines()
 
-def load_sources():
-    try:
-        with open(SOURCES_FILE, encoding="utf-8") as f:
-            return [line.strip() for line in f if line.strip() and not line.startswith('#')]
-    except:
-        return []
+        for line in lines:
+            line = line.strip()
+            if not line or line.startswith('#') or line in seen:
+                continue
+            lower = line.lower()
+            # Оставляем vless, vmess, hysteria2 (можно добавить trojan и т.д. если нужно)
+            if any(proto in lower for proto in ['vless://', 'vmess://', 'hysteria2://']):
+                seen.add(line)
+                all_lines.append(line)
 
-def matches_whitelist(config: str, whitelist: list) -> bool:
-    if not whitelist:
-        return True
-    config_lower = config.lower()
-    for domain in whitelist:
-        if domain.startswith('*.'):
-            base = domain[2:]
-            if re.search(rf'[\./]{re.escape(base)}', config_lower):
-                return True
-        elif domain in config_lower:
-            return True
-    return False
+        print(f"Собрано из {urlparse(url).netloc}: {len(lines)} строк, после фильтра ~{len(all_lines)}")
+    except Exception as e:
+        print(f"Пропуск {url}: {e}")
 
-def main():
-    whitelist = load_whitelist()
-    sources = load_sources()
-    
-    print(f"Загружено whitelist доменов: {len(whitelist)}")
-    print(f"Источников подписок: {len(sources)}")
-    
-    all_configs = []
-    raw_count = 0
-    
-    for url in sources:
-        try:
-            resp = requests.get(url, timeout=20)
-            resp.raise_for_status()
-            lines = resp.text.splitlines()
-            raw_count += len(lines)
-            for line in lines:
-                line = line.strip()
-                if line.startswith(("vless://", "vmess://", "hysteria2://", "tuic://", "trojan://")):
-                    all_configs.append(line)
-        except Exception as e:
-            print(f"Ошибка при загрузке {url}: {e}")
+# ... (остальной код остаётся без изменений: header, запись в configs.txt и version.txt)
     
     # Убираем дубли
     unique_configs = list(dict.fromkeys(all_configs))
