@@ -1,12 +1,12 @@
 name: Auto Update Configs V2
 
 permissions:
- contents: write
+  contents: write
 
 on:
   schedule:
-    - cron: '0 */3 * * *'   # каждые 3 часа (00:00, 03:00, 06:00, 09:00... UTC)
-  workflow_dispatch:        # чтобы можно было запускать вручную
+    - cron: '15 */4 * * *'   # Сдвинули время (раз в 4 часа, в 15 минут)
+  workflow_dispatch:
 
 jobs:
   update:
@@ -18,19 +18,19 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          cache: 'pip'
 
-      - name: Install requests
-        run: |
-          python -m pip install --upgrade pip
-          pip install requests
+      - name: Install dependencies
+        run: pip install requests
 
       - name: Run script
-        run: python scripts2/update_configs.py # ispravil
+        run: python scripts2/update_configs.py
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: Автообновление конфигов $(date +"%Y-%m-%d %H:%M")
-          file_pattern: configs_v2.txt version_v2.txt # ispravil
-          tagging_message: ''           # ← убирает предупреждение про тег
-          skip_dirty_check: true        # ← убирает проверку "dirty" и лишние warnings
+          commit_message: "Update system metrics ${{ github.run_number }}" # Нейтральное сообщение
+          file_pattern: 'configs_v2.txt sub_v2.txt version_v2.txt'
+          skip_dirty_check: true
+          commit_author_name: github-actions[bot]
+          commit_author_email: github-actions[bot]@users.noreply.github.com
