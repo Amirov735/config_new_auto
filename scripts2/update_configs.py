@@ -1,10 +1,23 @@
 import requests
 import datetime
+import base64
+import socket
 from urllib.parse import urlparse
 
-print("Запуск имбового автообновления конфигов...")
+# Функция для быстрой проверки: жив ли IP/Порт (TCP чекер)
+def is_alive(url_string):
+    try:
+        # Извлекаем хост и порт для проверки
+        parsed = url_string.split('@')[-1].split('?')[0]
+        host_port = parsed.split(':')
+        host = host_port[0]
+        port = int(host_port[1])
+        
+        with socket.create_connection((host, port), timeout=2):
+            return True
+    except:
+        return False
 
-# Список крутых публичных источников (добавляй/убирай свои)
 SOURCES = [
     "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/Vless-Reality-White-Lists-Rus-Mobile.txt",
     "https://raw.githubusercontent.com/zieng2/wl/refs/heads/main/vless_universal.txt",
@@ -12,54 +25,38 @@ SOURCES = [
 ]
 
 all_lines = []
-seen = set()  # для удаления дублей
+seen = set()
 
 for url in SOURCES:
     try:
-        response = requests.get(url, timeout=15)
+        # Добавляем User-Agent, чтобы гитхаб или источники не банили скрипт
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0 Safari/537.36'}
+        response = requests.get(url, headers=headers, timeout=15)
         response.raise_for_status()
         lines = response.text.strip().splitlines()
         
-        # Фильтруем только нужные протоколы (vless, vmess, hysteria2)
         for line in lines:
             line = line.strip()
             if not line or line.startswith('#') or line in seen:
                 continue
-            lower = line.lower()
-            if any(proto in lower for proto in ['vless://', 'vmess://', 'hysteria2://']):
+            
+            # Фильтр протоколов
+            if any(proto in line.lower() for proto in ['vless://', 'vmess://', 'hysteria2://']):
+                # ХИТРОСТЬ: Проверяем, не забанен ли сервер (опционально, замедляет скрипт)
+                # if is_alive(line): 
                 seen.add(line)
                 all_lines.append(line)
-        
-        print(f"Собрано из {urlparse(url).netloc}: {len(lines)} строк, после фильтра ~{len(all_lines)}")
-    
     except Exception as e:
-        print(f"Пропуск {url}: {e}")
+        print(f"Ошибка на {url}: {e}")
 
-# Если ничего не собралось — fallback
-if not all_lines:
-    all_lines = ["# Нет свежих конфигов — проверь источники"]
-
-# Добавляем красивую шапку и метку
-header = f"""# Имбовая коллекция VLESS / VMESS / HYSTERIA2
-# Автообновлено: {datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}
-# Источники: {len(SOURCES)} подписок | Уникальных: {len(all_lines)}
-# Протоколы: vless vmess hysteria2 (фильтр включён)
-
-"""
-
-content = "\n".join(all_lines)
-
-# Добавляем только одну строку в самый конец (для v2rayNG это безопасно)
-content += f"\n\n# Auto updated: {datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')} | {len(all_lines)} configs"
-
-# Пишем в configs.txt
+# 1. Обычный список (configs_v2.txt)
 with open("configs_v2.txt", "w", encoding="utf-8") as f:
-    f.write(header + content)   # ← лучше писать header + content
+    f.write("\n".join(all_lines))
 
-print(f"Финал: {len(all_lines)} уникальных конфигов сохранено!")
+# 2. ХИТРОСТЬ: Base64 версия (для обхода простых фильтров ТСПУ по ключевым словам)
+# Назови файл как-нибудь нейтрально, например "data_v2.txt" или "sys_update"
+b64_content = base64.b64encode("\n".join(all_lines).encode('utf-8')).decode('utf-8')
+with open("sub_v2.txt", "w", encoding="utf-8") as f:
+    f.write(b64_content)
 
-# version_v2.txt для красоты
-with open("version_v2.txt", "w", encoding="utf-8") as f:
-    f.write(f"Last update: {datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}\n"
-            f"Unique configs: {len(all_lines)}\n"
-            f"Protocols: vless, vmess, hysteria2")
+print(f"Готово! Собрано {len(all_lines)} конфигов.")
