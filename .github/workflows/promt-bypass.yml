@@ -29,9 +29,8 @@ jobs:
         run: python scripts/update_configs.py
 
       - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: Автообновление конфигов $(date +"%Y-%m-%d %H:%M")
-          file_pattern: 'Promt-bypass.txt'
-          tagging_message: ''           # ← убирает предупреждение про тег
-          skip_dirty_check: true        # ← убирает проверку "dirty" и лишние warnings
+       - uses: stefanzweifel/git-auto-commit-action@v5
+  with:
+    commit_message: "Автообновление конфигов $(date +'%Y-%m-%d %H:%M')"
+    # Добавляем Promt-bypass.txt, чтобы гит его видел
+    file_pattern: 'configs.txt version.txt Promt-bypass.txt'
