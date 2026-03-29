@@ -24,13 +24,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests
 
-      - name: Run script
-        run: python scripts/update_configs.py
-
-      - name: Commit changes
+      - name: Commit and Push changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: Автообновление конфигов $(date +"%Y-%m-%d %H:%M")
-          file_pattern: configs.txt version.txt
-          tagging_message: ''           # ← убирает предупреждение про тег
-          skip_dirty_check: true        # ← убирает проверку "dirty" и лишние warnings
+          commit_message: "Update Promt-bypass config"
+          # ВОТ ТУТ ДОЛЖНО СТОЯТЬ НАЗВАНИЕ:
+          file_pattern: 'Promt-bypass.txt'
