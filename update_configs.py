@@ -19,7 +19,7 @@ def is_alive(url_string):
         return False
 
 SOURCES = [
-    
+  "https://raw.githubusercontent.com/Amirov735/config_new_auto/refs/heads/main/Promt-bypass.txt",
 ]
 
 all_lines = []
