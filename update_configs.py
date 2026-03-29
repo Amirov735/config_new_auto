@@ -54,7 +54,7 @@ with open("Promt-bypass.txt", "w", encoding="utf-8") as f:
 # 2. ХИТРОСТЬ: Base64 версия (для обхода простых фильтров ТСПУ по ключевым словам)
 # Назови файл как-нибудь нейтрально, например "data_v2.txt" или "sys_update"
 b64_content = base64.b64encode("\n".join(all_lines).encode('utf-8')).decode('utf-8')
-with open("sub_bypass.txt", "w", encoding="utf-8") as f:
-    f.write(b64_content)
+with open('Promt-bypass.txt', 'w') as f:
+    f.write(your_base64_data)
 
 print(f"Готово! Собрано {len(all_lines)} конфигов.")
