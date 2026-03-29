@@ -32,6 +32,6 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: Автообновление конфигов $(date +"%Y-%m-%d %H:%M")
-          file_pattern: Promt-bypass.txt version.txt
+          file_pattern: 'Promt-bypass.txt'
           tagging_message: ''           # ← убирает предупреждение про тег
           skip_dirty_check: true        # ← убирает проверку "dirty" и лишние warnings
