@@ -5,7 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 # Список твоих источников
 URLS = [
-    
+    "https://raw.githubusercontent.com/Amirov735/config_new_auto/refs/heads/main/Promt-bypass.txt",
     # Сюда можно бахнуть еще 10-20 ссылок, он все переварит
 ]
 
