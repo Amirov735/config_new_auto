@@ -5,7 +5,6 @@ from concurrent.futures import ThreadPoolExecutor
 
 # Список твоих источников
 URLS = [
-    "https://raw.githubusercontent.com/Amirov735/config_new_auto/refs/heads/main/Promt-bypass.txt",
     "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/Vless-Reality-White-Lists-Rus-Mobile.txt",
     "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/Vless-Reality-White-Lists-Rus-Mobile-2.txt",
     "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/refs/heads/main/WHITE-CIDR-RU-all.txt",
