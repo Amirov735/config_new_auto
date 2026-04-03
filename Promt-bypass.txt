@@ -262,4 +262,3 @@ vless://3cb9f2c2-cd60-4616-963e-6a1c5d1c8b02@wl-ru-vk-01.ray-balance.space:443?e
 vless://00809346-b95e-4d4d-8a50-0c82bb75c0ce@212.233.120.4:443?encryption=none&mode=auto&path=%2Fapi%2Fv2%2F&security=tls&sni=bonus00-01.uiu.fyi&type=xhttp#%F0%9F%8F%B3%EF%B8%8F%20ShatakVPN%20380097
 vless://2311325e-b42e-4da4-9da7-80ae8d82e2fc@212.233.121.106:443?encryption=none&mode=auto&path=%2Fapi%2Fv2%2F&security=tls&sni=bonus66-01.uiu.fyi&type=xhttp#%F0%9F%8F%B3%EF%B8%8F%20ShatakVPN%20937463
 vless://00809346-b95e-4d4d-8a50-0c82bb75c0ce@212.233.120.4:443?encryption=none&mode=auto&path=%2Fapi%2Fv2%2F&security=tls&sni=bonus00-01.uiu.fyi&type=xhttp#%F0%9F%8F%B3%EF%B8%8F%20ShatakVPN%20270406
-vless://nasnet@57.129.64.102:443?security=tls&encryption=none&alpn=h2,http/1.1&headerType=none&fp=chrome&type=tcp&flow=xtls-rprx-vision&sni=nasnet-5712964102-
