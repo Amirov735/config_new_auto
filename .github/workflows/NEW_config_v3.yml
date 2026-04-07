@@ -1,32 +1,36 @@
 name: NEW_config_v3 Auto Update
 
 permissions:
- contents: write
+  contents: write
 
 on:
   schedule:
-    - cron: '0 */3 * * *'   # каждые 3 часа (00:00, 03:00, 06:00, 09:00... UTC)
-  workflow_dispatch:        # чтобы можно было запускать вручную
+    - cron: '0 */3 * * *'
+  workflow_dispatch:
 
 jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
-      - name: Install requests
-        run: python main.py
+      - name: Install dependencies
+        run: |
           python -m pip install --upgrade pip
           pip install requests
+
+      - name: Run script
+        # Убедись, что твой python-файл в корне репозитория называется именно main.py
+        run: python main.py 
 
       - name: Commit and Push changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "Update NEW_config_v3 config"
-          # ВОТ ТУТ ДОЛЖНО СТОЯТЬ НАЗВАНИЕ:
           file_pattern: 'NEW_config_v3.txt'
