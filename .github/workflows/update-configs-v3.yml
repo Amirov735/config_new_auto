@@ -2,8 +2,11 @@ name: Update Configs V3
 
 on:
   schedule:
-    - cron: '0 */4 * * *'  # каждые 4 часа (можно поменять)
+    - cron: '0 */4 * * *'    # каждые 4 часа
   workflow_dispatch:
+
+permissions:
+  contents: write            # ← ЭТО САМОЕ ВАЖНОЕ ИСПРАВЛЕНИЕ
 
 jobs:
   update:
@@ -20,12 +23,16 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run update script for V3
-        run: python scripts/update_configs.py --version v3   # или путь к твоему скрипту
+        run: python scripts/update_configs.py     # убрал --version v3, потому что он у тебя не работал
 
-      - name: Commit and push
+      - name: Commit and push changes
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
-          git add NEW_config_v3.txt
-          git commit -m "Auto update NEW_config_v3.txt" || echo "No changes"
-          git push
+          git add NEW_config_v3.txt configs.txt version_v3.txt   # добавил все файлы, которые могут меняться
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Auto update configs + NEW_config_v3.txt $(date +'%Y-%m-%d %H:%M:%S')"
+            git push
+          fi
