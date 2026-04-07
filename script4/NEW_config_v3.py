@@ -3,71 +3,59 @@ import base64
 import re
 from concurrent.futures import ThreadPoolExecutor
 
-# Список твоих источников
 URLS = [
-
     "https://raw.githubusercontent.com/ewecrow78-gif/whitelist1/main/list.txt",
     "https://raw.githubusercontent.com/ERRORQSFG/fuckwhitelists/refs/heads/main/sub.txt",
     "https://raw.githubusercontent.com/ssavnayt/AWCFG-CONFIG-LIST/refs/heads/main/Configs-AUTO.txt",
     "https://raw.githubusercontent.com/ssavnayt/AWCFG-CONFIG-LIST/refs/heads/main/Configs-all-country.txt",
     "https://raw.githubusercontent.com/Maskkost93/kizyak-vpn-4.0/refs/heads/main/kizyakbeta6.txt",
     "https://raw.githubusercontent.com/VSd223/vpn/refs/heads/main/vpn",
-    
-    # Сюда можно бахнуть еще 10-20 ссылок, он все переварит
 ]
 
 def try_decode(content):
-    """Безопасное декодирование Base64"""
     content = content.strip()
     if not content: return ""
-    if any(prot in content[:100] for prot in ['://']): return content
+    # Если это уже список ссылок, возвращаем как есть
+    if '://' in content[:100]: return content
     try:
+        # Пробуем декодировать, если это Base64
         decoded = base64.b64decode(content + "===").decode('utf-8', errors='ignore')
-        return decoded if '://' in decoded else content
+        return decoded
     except:
         return content
 
 def fetch_url(url):
-    """Загрузка и поиск конфигов через регулярки"""
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) proxy-fetcher'}
+    headers = {'User-Agent': 'Mozilla/5.0'}
     try:
         r = requests.get(url, headers=headers, timeout=15)
         r.raise_for_status()
         data = try_decode(r.text)
-        
-        # Ищем всё, что похоже на vless, vmess, ss, trojan, hy2, hysteria2, tuic
         pattern = r'(?:vless|vmess|ss|trojan|hysteria2|hy2|tuic)://[^\s|<>"\']+'
-        found = re.findall(pattern, data)
-        return found
+        return re.findall(pattern, data)
     except Exception as e:
-        print(f"[!] Пропуск {url}: {e}")
+        print(f"[!] Ошибка на {url}: {e}")
         return []
 
 def main():
-    print("=== START AUTO-UPDATE (6h Cycle) ===")
-    
     all_configs = []
-
-    # Качаем всё параллельно (быстро)
     with ThreadPoolExecutor(max_workers=10) as executor:
         results = list(executor.map(fetch_url, URLS))
 
     for res in results:
         all_configs.extend(res)
 
-    # 1. Чистим дубликаты (сохраняем порядок)
-    unique_configs = list(dict.fromkeys(all_configs))
+    final_list = list(dict.fromkeys([c for c in all_configs if len(c) > 20]))
+    
+    # Склеиваем всё в одну строку
+    out_text = "\n".join(final_list)
+    
+    # Кодируем в Base64, чтобы клиенты понимали подписку
+    encoded_configs = base64.b64encode(out_text.encode('utf-8')).decode('utf-8')
 
-    # 2. Убираем явный мусор (слишком короткие строки)
-    final_list = [c for c in unique_configs if len(c) > 20]
-
-    # 3. Сохраняем в файл
     with open("NEW_config_v3.txt", "w", encoding="utf-8") as f:
-        f.write("\n".join(final_list))
+        f.write(encoded_configs)
 
-    print(f"\n[+] Сбор завершен!")
-    print(f"[+] Найдено всего: {len(all_configs)}")
-    print(f"[+] Уникальных и живых: {len(final_list)}")
+    print(f"Готово! Собрано уникальных: {len(final_list)}")
 
 if __name__ == "__main__":
     main()
