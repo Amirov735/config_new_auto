@@ -27,7 +27,7 @@ jobs:
 
       - name: Run script
         # Убедись, что твой python-файл в корне репозитория называется именно main.py
-        run: python Main.py 
+        run: python main.py 
 
       - name: Commit and Push changes
         uses: stefanzweifel/git-auto-commit-action@v5
