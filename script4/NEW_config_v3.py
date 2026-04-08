@@ -10,6 +10,7 @@ SOURCES = [
     "https://raw.githubusercontent.com/ssavnayt/AWCFG-CONFIG-LIST/refs/heads/main/Configs-all-country.txt",
     "https://raw.githubusercontent.com/Maskkost93/kizyak-vpn-4.0/refs/heads/main/kizyakbeta6.txt",
     "https://raw.githubusercontent.com/VSd223/vpn/refs/heads/main/vpn",
+    "https://airlinkvpn.github.io/1.txt",
     # Добавляй сюда новые источники
 ]
 
