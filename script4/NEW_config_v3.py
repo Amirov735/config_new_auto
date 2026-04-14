@@ -4,12 +4,7 @@ from datetime import datetime
 
 # Твои источники (добавляй новые сюда)
 SOURCES = [
-    "https://raw.githubusercontent.com/ewecrow78-gif/whitelist1/main/list.txt",
-    "https://raw.githubusercontent.com/ERRORQSFG/fuckwhitelists/refs/heads/main/sub.txt",
-    "https://raw.githubusercontent.com/ssavnayt/AWCFG-CONFIG-LIST/refs/heads/main/Configs-AUTO.txt",
-    "https://raw.githubusercontent.com/ssavnayt/AWCFG-CONFIG-LIST/refs/heads/main/Configs-all-country.txt",
-    "https://raw.githubusercontent.com/Maskkost93/kizyak-vpn-4.0/refs/heads/main/kizyakbeta6.txt",
-    "https://raw.githubusercontent.com/VSd223/vpn/refs/heads/main/vpn",
+    
     "https://airlinkvpn.github.io/1.txt",
     # Добавляй сюда новые источники
 ]
