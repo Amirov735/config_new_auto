@@ -5,7 +5,7 @@ from datetime import datetime
 # Твои источники (добавляй новые сюда)
 SOURCES = [
     
-    "https://airlinkvpn.github.io/1.txt",
+    "https://raw.githubusercontent.com/Amirov735/config_new_auto/refs/heads/main/NEW_config_v3.txt",
     # Добавляй сюда новые источники
 ]
 
